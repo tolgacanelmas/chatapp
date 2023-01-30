@@ -1,32 +1,28 @@
-// import React, {useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from "react";
 
-// const UserContext = React.createContext()
-// const UserSuccessContext = React.createContext()
+const UserContext = React.createContext();
 
-// export function useUserLoggedIn() {
-//   return useContext(UserContext)
-// }
+export function useUserLoggedIn() {
+  return useContext(UserContext);
+}
 
-// export function useUserSuccessLogged() {
-//   return useContext(UserSuccessContext)
-// }
+export function UserProvider({ children }: any) {
+  const [isLogged, setIsLogged] = useState<Boolean>(false);
 
-// export function UserProvider( { children }:any) {
-//   const [isLogged, setIsLogged] = useState<Boolean>(false)
+  const successLogin = () => {
+    setIsLogged(true);
+  };
 
-//   const successLogin = () => {
-//     setIsLogged(true)
-//   }
+  const handleLogout = () => {
+    setIsLogged(false);
+    localStorage.removeItem("user");
+  };
 
-//   useEffect(() => {
-//     console.log(isLogged)
-//   }, [isLogged])
-
-//   return (
-//     <UserContext.Provider value={isLogged}>
-//       <UserSuccessContext.Provider value={successLogin}>
-//         {children}
-//       </UserSuccessContext.Provider>
-//     </UserContext.Provider>
-//   )
-// }
+  return (
+    <UserContext.Provider
+      value={{ isLogged, setIsLogged, handleLogout, successLogin }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+}
