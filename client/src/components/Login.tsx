@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useUserLoggedIn } from "../context/UserContext";
 
-export default function Login({ handleSubmit }: any) {
+export default function Login() {
   const [registerText, setRegisterText] = useState(
     "Click here for registration"
   );
@@ -9,6 +10,8 @@ export default function Login({ handleSubmit }: any) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { handleSubmitLogin }: any = useUserLoggedIn();
 
   const handleLoginOption = () => {
     setIsLoginForm(!isLoginForm);
@@ -23,19 +26,22 @@ export default function Login({ handleSubmit }: any) {
 
   return (
     <div className="login-screen h-full flex justify-center items-center flex-col">
-      <h1 className="text-white text-3xl mb-8">Login to chat app</h1>
+      <h1 className="text-white text-3xl mb-8">Chat app</h1>
       <div className="w-80 border border-gray-500 rounded-md px-10 py-8 shadow-lg">
         <form>
-          <div className="form-control">
-            <label>Username</label>
-            <input type="text" onChange={(e) => setUsername(e.target.value)} />
-          </div>
           {!isLoginForm && (
             <div className="form-control">
-              <label>Email</label>
-              <input type="text" onChange={(e) => setEmail(e.target.value)} />
+              <label>Username</label>
+              <input
+                type="text"
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
           )}
+          <div className="form-control">
+            <label>Email</label>
+            <input type="text" onChange={(e) => setEmail(e.target.value)} />
+          </div>
           <div className="form-control">
             <label>Password</label>
             <input
@@ -46,7 +52,9 @@ export default function Login({ handleSubmit }: any) {
           <button
             type="submit"
             className="mt-2"
-            onClick={(e) => handleSubmit(e, username, password, email)}
+            onClick={(e) =>
+              handleSubmitLogin(e, username, password, email, isLoginForm)
+            }
           >
             {loginBtn}
           </button>

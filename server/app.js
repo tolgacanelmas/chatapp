@@ -2,12 +2,35 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const app = express();
+const http = require("http");
 const dbConnect = require("./db/dbConnect");
 const User = require("./db/userModel");
+const socketio = require("socket.io");
 
 dbConnect();
 
 app.use(express.json());
+
+const port = process.env.PORT || "3000";
+const server = http.createServer(app);
+
+const io = socketio(server, {
+  cors: {
+    origin: "http://localhost:5173",
+  },
+});
+server.listen(port);
+
+io.on("connection", (socket) => {
+  console.log("new client connected");
+  socket.emit("connection", "naber");
+});
+
+server.on("listening", () => {
+  const address = server.address();
+  const bind = typeof address === "string" ? "pipe " + address : "port " + port;
+  console.log("Listening on " + bind);
+});
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -75,6 +98,7 @@ app.post("/login", (request, response) => {
             message: "Login Successful",
             email: user.email,
             token,
+            id: user._id,
           });
         })
         .catch((error) => {
@@ -92,10 +116,19 @@ app.post("/login", (request, response) => {
     });
 });
 
+app.post("/send-message", function (req, res) {
+  const messageInfo = {
+    senderId: req.body.senderId,
+    recieverId: req.body.recieverId,
+    message: req.body.message,
+    time: req.body.time,
+  };
+
+  res.send(messageInfo);
+});
+
 app.get("/users", function (req, res) {
   User.find({}, function (err, users) {
     res.send(users);
   });
 });
-
-module.exports = app;
