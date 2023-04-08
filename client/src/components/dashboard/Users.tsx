@@ -3,6 +3,8 @@ import { useUserLoggedIn } from "../../context/UserContext";
 export default function Users({ handleSelectUser }: any) {
   const { handleLogout, users, user }: any = useUserLoggedIn();
 
+  console.log(user);
+
   return (
     <div className="flex flex-col w-1/4 mr-10">
       <div className="text-gray-100 border-b border-gray-500 pb-6 mb-6">
@@ -29,7 +31,7 @@ export default function Users({ handleSelectUser }: any) {
 
       <div className="overflow-auto h-max">
         {users.map((eachUser: any, i: any) => {
-          if (eachUser._id !== user._id) {
+          if (eachUser._id !== user.id) {
             return (
               <div
                 key={i}

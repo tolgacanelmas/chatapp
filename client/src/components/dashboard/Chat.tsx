@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useUserLoggedIn } from "../../context/UserContext";
+type MessageInfo = {
+  senderId: String;
+  recieverId: String;
+  message: String;
+  time: Date;
+};
 
 export default function Chat({ selectedUser }: any) {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<MessageInfo[]>([]);
   const { user }: any = useUserLoggedIn();
 
   const handleSendMessage = async () => {
+    console.log(selectedUser);
     const messageInfo = {
       senderId: user.id,
       recieverId: selectedUser._id,
@@ -26,7 +34,10 @@ export default function Chat({ selectedUser }: any) {
       const response = await res.json();
       setMessage("");
     }
+    setMessages([...messages, messageInfo]);
   };
+
+  console.log(messages);
 
   return (
     <div>

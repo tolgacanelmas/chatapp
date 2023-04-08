@@ -23,7 +23,14 @@ server.listen(port);
 
 io.on("connection", (socket) => {
   console.log("new client connected");
-  socket.emit("connection", "naber");
+  socket.on("message", (message) => {
+    console.log(`Received message from ${socket.id}: ${message}`);
+    io.emit("message", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket ${socket.id} disconnected.`);
+  });
 });
 
 server.on("listening", () => {
@@ -99,6 +106,7 @@ app.post("/login", (request, response) => {
             email: user.email,
             token,
             id: user._id,
+            username: user.username,
           });
         })
         .catch((error) => {

@@ -46,10 +46,10 @@ export function UserProvider({ children }: any) {
       const user = await response.json();
 
       if (response.status === 200) {
-        console.log(user);
         localStorage.setItem("user", JSON.stringify(user));
         setUser(user);
         setIsLogged(true);
+        getUsers();
       }
     } else {
       const data: UserSendData = { email, username, password };
@@ -69,6 +69,7 @@ export function UserProvider({ children }: any) {
         localStorage.setItem("user", JSON.stringify(user.user));
         setUser(user.user);
         setIsLogged(true);
+        getUsers();
       }
     }
   };
@@ -90,8 +91,9 @@ export function UserProvider({ children }: any) {
     if (Object.keys(getUser).length > 0) {
       setIsLogged(true);
       getUsers();
+      setUser(getUser);
     }
-  }, [user]);
+  }, []);
 
   return (
     <UserContext.Provider
