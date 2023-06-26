@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as io from "socket.io-client";
 import { useUserLoggedIn } from "../../context/UserContext";
+
+const socket = io.connect("http://localhost:3000");
+
 type MessageInfo = {
   senderId: String;
   recieverId: String;
@@ -13,39 +17,68 @@ export default function Chat({ selectedUser }: any) {
   const { user }: any = useUserLoggedIn();
 
   const handleSendMessage = async () => {
-    console.log(selectedUser);
     const messageInfo = {
       senderId: user.id,
-      recieverId: selectedUser._id,
+      recieverId: selectedUser.id,
       message,
       time: new Date(),
     };
 
     if (message) {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(messageInfo),
-      };
-      const res = await fetch(
-        "http://localhost:3000/send-message",
-        requestOptions
-      );
-      const response = await res.json();
       setMessage("");
+      socket.emit("message", messageInfo);
     }
-    setMessages([...messages, messageInfo]);
   };
 
-  console.log(messages);
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages([...messages, message]);
+    });
+  }, [messages]);
 
   return (
-    <div>
-      <div>eski mesajlar</div>
+    <div className="flex flex-col justify-end w-full">
+      <div className="h-full flex flex-col justify-end border border-gray-500 border-b-0 rounded-lg p-1">
+        {messages.map((messageInfo: MessageInfo, i) => {
+          if (user.id === messageInfo.senderId) {
+            return (
+              <div key={i} className="text-right text-gray-300">
+                <span className="mr-1">{messageInfo.message}</span>
+                <span>
+                  {new Date(messageInfo.time).getHours() +
+                    ":" +
+                    new Date(messageInfo.time).getMinutes()}
+                </span>
+              </div>
+            );
+          } else {
+            return (
+              <div key={i} className="text-left text-gray-300">
+                <span>
+                  {new Date(messageInfo.time).getHours() +
+                    ":" +
+                    new Date(messageInfo.time).getMinutes()}
+                </span>
+                <span className="ml-1">{messageInfo.message}</span>
+              </div>
+            );
+          }
+        })}
+      </div>
       <div>
-        <div className="form-control">
-          <input type="text" onChange={(e) => setMessage(e.target.value)} />
-          <button onClick={handleSendMessage}>tıkla</button>
+        <div className="form-control relative">
+          <input
+            type="text"
+            value={message}
+            placeholder="Bir mesaj yazın..."
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button
+            onClick={handleSendMessage}
+            className="absolute right-0 text-gray-100 border-l rounded-sm px-3 hover:bg-gray-600 h-full"
+          >
+            Gönder
+          </button>
         </div>
       </div>
     </div>

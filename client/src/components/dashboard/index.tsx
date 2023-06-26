@@ -7,20 +7,20 @@ import { useUserLoggedIn } from "../../context/UserContext";
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const { user }: any = useUserLoggedIn();
+  const [activeIndex, setActiveIndex] = useState(null);
 
-  const handleSelectUser = (user: any) => {
+  const handleSelectUser = (user: any, i) => {
     setSelectedUser(user);
-
-    const socket = socketClient("http://localhost:3000");
-    socket.on("connection", (x) => {
-      console.log(x);
-      console.log(`I'm connected with the back-end`);
-    });
+    setActiveIndex(i);
   };
 
   return (
     <div className="flex p-8 bg-gray-700 h-full rounded-3xl overflow-hidden">
-      <Users handleSelectUser={handleSelectUser} />
+      <Users
+        handleSelectUser={handleSelectUser}
+        selectedUser={selectedUser}
+        activeIndex={activeIndex}
+      />
       <Chat selectedUser={selectedUser} user={user} />
     </div>
   );

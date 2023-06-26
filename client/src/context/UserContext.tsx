@@ -89,8 +89,8 @@ export function UserProvider({ children }: any) {
     const getUser: UserInfo = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (Object.keys(getUser).length > 0) {
-      setIsLogged(true);
       getUsers();
+      setIsLogged(true);
       setUser(getUser);
     }
   }, []);

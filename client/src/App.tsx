@@ -1,6 +1,6 @@
 import "./index.css";
 import Login from "./components/Login";
-import Dashboard from "./components/dashboard/Dashboard";
+import Dashboard from "./components/dashboard/index";
 import { useUserLoggedIn } from "./context/UserContext";
 
 export default function App() {
